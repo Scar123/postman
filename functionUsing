@@ -1,0 +1,91 @@
+//函数定义在global中
+postman.setGlobalVariable("logParams", function logParams() {
+    let helpers = {};
+
+    /** Test function to show this kludge is working. */
+    helpers.functionname = function functionname() {
+        tests["Response returned 200"] = responseCode.code === 200;
+       var hasResponse=JSON.parse(responseBody).success?true:false; if(!hasResponse) tests['服务端在超时前没返回任何数据，请检查相关服务、网络或反向代理设置（以下跳过其他断言）']=false;
+    }
+
+    // ...additional helpers
+
+    return helpers;
+} + '; logParams();'); // when eval'd out of globals, execute it
+tests["helpers initialized"] = true;
+// Then, assuming that call runs at the beginning of your collection, you can do the following minimal loading in all subsequent calls:
+
+ var helpers = eval(globals.logParams);
+
+helpers.functionname();
+//函数中使用到的指定下一个request
+//增量更新字段使用
+//基本
+// 用例A的Tests里写
+if (xxx) postman.setNextRequest('null');  // 终止执行
+
+// 用例B的Tests里写
+postman.setNextRequest('用例A
+
+//初始化函数
+//指定下一个更新类型函数
+//初始化需要更新的字段
+
+postman.clearEnvironmentVariable("PoolIndex");
+postman.setEnvironmentVariable("PoolIndex",0);
+var PoolIndex=parseInt(environment["PoolIndex"]);
+tests["PoolIndex is"+environment["PoolIndex"]]=true;
+//初始化为PoolUpdateType 环境变量，转换为arry 方式var ArrPoolUpdateType=environment["PoolUpdateType"].split(","); ArrPoolUpdateType[PoolIndex]
+ try{//此处更改需要更新的字段名值即可
+       var PoolUpdateType=new Array("","","","","","")
+       postman.setEnvironmentVariable("PoolUpdateType",PoolUpdateType);
+       var ArrPoolUpdateType=environment["PoolUpdateType"].split(","); 
+       postman.setEnvironmentVariable("PoolArr", ArrPoolUpdateType.length);
+	         for(var i=0;i<=environment["PoolArr"]-1;i++){
+	          tests["PoolArr is"+parseInt(environment["PoolArr"])+"PoolUpdateType "+i+"is"+ArrPoolUpdateType[i]]=true;}
+	        }
+ 
+catch(e){tests[" set value have exception is"+e]=false;}
+ //更新后，若数字不等于3，则Pool下标PoolIndex +1 且跑下一个savePool
+try{
+	 var ramdomNoPool=""+new Date().getTime();
+	 var ramdomNoPool=ramdomNoPool.substr(-5,5);
+    postman.setEnvironmentVariable("ramdomNoPool", ramdomNoPool);
+    postman.setEnvironmentVariable("type",ArrPoolUpdateType[parseInt(environment["PoolIndex"])]);
+    tests["type is"+environment["type"]]=true;
+    postman.setEnvironmentVariable(ArrPoolUpdateType[parseInt(environment["PoolIndex"])], environment["type"]+environment["ramdomNoPool"]+"");
+    var typeValue =environment[ArrPoolUpdateType[parseInt(environment["PoolIndex"])]];
+    postman.setEnvironmentVariable("typeValue",typeValue);
+	tests["set type "+environment["type"]]=true;
+	tests["set typeValue "+environment["typeValue"]]=true;
+ }
+  catch(e){tests[" set firest  typeValue   have exception is"+e]=false;}
+  tests["response code is 200"] = responseCode.code === 200;
+
+try {
+    var data = JSON.parse(responseBody);
+}
+catch(e) {
+    console.log('Cannot parse response,probably not a JSON');
+}
+First, create a no-op "initialization" api call in your collection (eg a GET to https://echo.getpostman.com/get?plusOne=postman-app-support-882) that has the following Tests script:
+
+postman.setGlobalVariable("loadHelpers", function loadHelpers() {
+    let helpers = {};
+
+    /** Test function to show this kludge is working. */
+    helpers.test200 = function test200() {
+        tests["Response returned 200"] = responseCode.code === 200;
+    }
+
+    // ...additional helpers
+
+    return helpers;
+} + '; loadHelpers();'); // when eval'd out of globals, execute it
+tests["helpers initialized"] = true;
+Then, assuming that call runs at the beginning of your collection, you can do the following minimal loading in all subsequent calls:
+
+var helpers = eval(globals.loadHelpers);
+
+helpers.test200();
+
