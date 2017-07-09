@@ -35,3 +35,6 @@ environment.variableKey = 12345;  // 少打字，取出时也不用转换类型
 let foo = environment.variableKey;
 // 清除
 delete environment.variableKey;
+／／调试说明
+Type chrome://flags inside your Chrome URL window
+"inspect element".or tag ／chrome://inspect/#apps
