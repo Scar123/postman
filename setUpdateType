@@ -1,0 +1,42 @@
+
+
+
+var setUpdateType=function tester(UpdateType){
+postman.clearEnvironmentVariable("Index");
+postman.setEnvironmentVariable("Index",0);
+var Index=parseInt(environment["Index"]);
+tests["Index is"+environment["Index"]]=true;
+//初始化为UpdateType 环境变量，转换为arry 方式var ArrUpdateType=environment["UpdateType"].split(","); ArrUpdateType[Index]
+ try{//此处更改需要更新的字段名值即可
+       
+       postman.setEnvironmentVariable("UpdateType",JSON.stringify(UpdateType));
+       var ArrUpdateType=environment["UpdateType"].split(","); 
+       postman.setEnvironmentVariable("Arr", ArrUpdateType.length);
+           for(var i=0;i<=environment["Arr"]-1;i++){
+            tests["Arr is"+parseInt(environment["Arr"])+"UpdateType "+i+"is"+ArrUpdateType[i]]=true;}
+          }
+ 
+catch(e){tests[" set value have exception is"+e]=false;}
+ //更新后，若数字不等于3，则Pool下标Index +1 且跑下一个savePool
+try{
+   var randomNo=""+new Date().getTime();
+   var randomNo=randomNo.substr(-5,5);
+    postman.setEnvironmentVariable("randomNo", randomNo);
+    postman.setEnvironmentVariable("type",ArrUpdateType[parseInt(environment["Index"])]);
+    tests["type is"+environment["type"]]=true;
+    postman.setEnvironmentVariable(ArrUpdateType[parseInt(environment["Index"])], environment["type"]+environment["randomNo"]+"");
+    var typeValue =environment[ArrUpdateType[parseInt(environment["Index"])]];
+    postman.setEnvironmentVariable("typeValue",typeValue);
+  tests["set type "+environment["type"]]=true;
+  tests["set typeValue "+environment["typeValue"]]=true;
+ }
+  catch(e){tests[" set firest  typeValue   have exception is"+e]=false;}
+  tests["response code is 200"] = responseCode.code === 200;
+
+
+
+
+};
+postman.setGlobalVariable("setUpdateType",setUpdateType);
+// var setUpdateType=eval('('+globals.setUpdateType+')');
+// setUpdateType(UpdateType)
