@@ -1,0 +1,45 @@
+	//存储到全局变量，使用时解析之行即可
+var assertNotEqual=function tester(name,actual,expected){
+	tests[`${name}不等于${expected}（实际值：${actual}）`]=actual!==expected;
+};
+postman.setGlobalVariable("assertNotTimeout",assertNotTimeout);
+var assertNotTimeout=function tester(){
+var hasResponse=postman.getResponseHeader('Content-Type')?true:false; if(!hasResponse) tests['服务端在超时前没返回任何数据，请检查相关服务、网络或反向代理设置（以下跳过其他断言）']=false;
+};
+postman.setGlobalVariable("assertNotEqual",assertNotEqual);
+var logParams=function tester(){
+	var hasResponse=postman.getResponseHeader('Content-Type')?true:false;if(!hasResponse) tests['服务端在超时前没返回任何数据，请检查相关服务、网络或反向代理设置（以下跳过其他断言）']=false;
+	if(hasResponse) tests[`[INFO] （仅限POST，超时没返回时不解析）以下为请求参数：    ${JSON.stringify(request.data)}`]=true;
+}
+postman.setGlobalVariable("logParams",logParams);
+var getResponseJson=function tester(){
+try{
+	var hasResponse=postman.getResponseHeader('Content-Type')?true:false; if(!hasResponse) tests['服务端在超时前没返回任何数据，请检查相关服务、网络或反向代理设置（以下跳过其他断言）']=false;
+	if(hasResponse) var json=JSON.parse(responseBody);}catch(err){ tests['服务端没返回合法的JSON格式，请检查相关服务、网络或反向代理设置（以下跳过其他断言）']=false; tests[`[INFO] 返回：${responseBody}`]=true; console.error(err);}
+
+}
+postman.setGlobalVariable("getResponseJson",getResponseJson);
+var assertType=function(name,value,type){
+let isType=(type==='array')? Array.isArray(value):typeof value===type; tests[`${name}为${type}（实际值：${value}）`]=isType;
+    
+};
+postman.setGlobalVariable("assertType",assertType);
+
+var assertEqual=function tester(name,expected,actual){
+tests[`${name}等于${expected}（实际值：${actual}）`]=actual===expected;};
+postman.setGlobalVariable("assertEqual",assertEqual);
+
+//使用
+
+var assertNotEqual = eval('('+globals.assertNotEqual+')');
+assertNotEqual("name", 'actual', 'expected');//字段name的实际是否等于实际值
+var logParams=eval('('+globals.logParams+')');//是否有Content-Type
+logParams();
+var getResponseJson=eval('('+globals.getResponseJson+')');
+getResponseJson();
+var assertType=eval('('+globals.assertType+')');
+assertType('name','value','array');
+
+ var assertEqual=eval('('+globals.assertEqual+')');
+ assertEqual('name','actual','expecte');
+
