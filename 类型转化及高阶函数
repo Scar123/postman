@@ -1,0 +1,36 @@
+
+JSON.stringify([]) 转化数组为string 
+//类型转换
+//万能的 JSON.parse(foo) 字符串的数字、数组、对象、布尔值扔进去都能转成对应的类型
+//省事法
+//
+postman.setGlobalVariable("foobar", "1");
+postman.getEnvironment("");
+tests["global var foobar = true"] = globals.foobar == true;
+//读取变量可用但是在tests中不可用
+environment.variableKey = 12345;  // 少打字，取出时也不用转换类型
+// 获取
+let foo = environment.variableKey;
+// 清除
+delete environment.variableKey;
+http://underscorejs.org/#sample
+／／函数使用说明将环境变量类型转为整数 var n=parseInt(environment[n]);等价
+var N = _.parseInt(environment.N)
+  
+JSON.stringify(_.union(JSON.parse(environment.done_artists), [environment.id]))
+／／将两者放到一个array并转化为string ／／
+添加一个新的元素到原始的array中
+//采摘指定object中propertyName的value，使之成为一个array
+／／生成一个指定个数的array
+  _.pluck(list, propertyName) 
+ _.sample(list, [n]) 
+  var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+_.pluck(stooges, 'name');
+=> ["moe", "larry", "curly"]
+_.each()
+ tracks = _(JSON.parse(responseBody).tracks).sample(N).pluck('id').value();
+    
+ // Store the track ids in the Environment, to be used in the next request
+ postman.setEnvironmentVariable("tracks", JSON.stringify(tracks));
+ _.now(); 返回时间戳
+ 
