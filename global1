@@ -30,6 +30,13 @@ tests[`${name}等于${expected}（实际值：${actual}）`]=actual===expected;}
 postman.setGlobalVariable("assertEqual",assertEqual);
 
 //使用
+// var logParams=eval('('+globals.logParams+')');//是否有Content-Type
+// var getResponseJson=eval('('+globals.getResponseJson+')');
+// var assertType=eval('('+globals.assertType+')');
+//  var assertEqual=eval('('+globals.assertEqual+')');
+//  var assertNotEqual = eval('('+globals.assertNotEqual+')');
+// //使用
+
 
 var assertNotEqual = eval('('+globals.assertNotEqual+')');
 assertNotEqual("name", 'actual', 'expected');//字段name的实际是否等于实际值
@@ -42,4 +49,26 @@ assertType('name','value','array');
 
  var assertEqual=eval('('+globals.assertEqual+')');
  assertEqual('name','actual','expecte');
+/／失败重试
+// Counter for number of requests
+var counter = environment.counter ? _.parseInt(environment.counter) + 1 : 1;
+postman.setEnvironmentVariable("counter", counter);
+
+
+function retryOnFailure(successCode, numberOfRetrys) {
+    var key = request.name + '_counter';
+    var execCounter = postman.getEnvironmentVariable(key) || 1;
+
+    var sleepDuration = 1000;
+    var waitUntilTime = new Date().getTime() + sleepDuration;
+    if (responseCode.code !== successCode && execCounter <= numberOfRetrys) {
+        while (new Date().getTime() < waitUntilTime) {
+            // Do Nothing -> Wait
+        }
+        console.log('Retrying: ' + request.name + '\nGot: ' + responseCode.code + ' Expected: ' + successCode + '\nWaited: ' + sleepDuration / 1000 + 'sec  \nRetry Number: ' + execCounter + ' of ' + numberOfRetrys);
+        execCounter++;
+        postman.setEnvironmentVariable(key, execCounter);
+        postman.setNextRequest(request.name);
+    }
+}
 
