@@ -39,13 +39,14 @@ postman.setGlobalVariable("assertEqual",assertEqual);
 
 
 var assertNotEqual = eval('('+globals.assertNotEqual+')');
-assertNotEqual("name", 'actual', 'expected');//字段name的实际是否等于实际值
+assertNotEqual("name", 'actual', 'expected');//字段name的实际是否等于实际值 
 var logParams=eval('('+globals.logParams+')');//是否有Content-Type
 logParams();
 var getResponseJson=eval('('+globals.getResponseJson+')');
 getResponseJson();
 var assertType=eval('('+globals.assertType+')');
 assertType('name','value','array');
+//boolean number string symbol function  object/array
 
  var assertEqual=eval('('+globals.assertEqual+')');
  assertEqual('name','actual','expecte');
