@@ -1,12 +1,12 @@
-	//存储到全局变量，使用时解析之行即可
+	 	//存储到全局变量，使用时解析之行即可
 var assertNotEqual=function tester(name,actual,expected){
 	tests[`${name}不等于${expected}（实际值：${actual}）`]=actual!==expected;
 };
-postman.setGlobalVariable("assertNotTimeout",assertNotTimeout);
+postman.setGlobalVariable("assertNotEqual",assertNotEqual);
 var assertNotTimeout=function tester(){
 var hasResponse=postman.getResponseHeader('Content-Type')?true:false; if(!hasResponse) tests['服务端在超时前没返回任何数据，请检查相关服务、网络或反向代理设置（以下跳过其他断言）']=false;
-};
-postman.setGlobalVariable("assertNotEqual",assertNotEqual);
+};postman.setGlobalVariable("assertNotTimeout",assertNotTimeout);
+
 var logParams=function tester(){
 	var hasResponse=postman.getResponseHeader('Content-Type')?true:false;if(!hasResponse) tests['服务端在超时前没返回任何数据，请检查相关服务、网络或反向代理设置（以下跳过其他断言）']=false;
 	if(hasResponse) tests[`[INFO] （仅限POST，超时没返回时不解析）以下为请求参数：    ${JSON.stringify(request.data)}`]=true;
@@ -30,33 +30,74 @@ tests[`${name}等于${expected}（实际值：${actual}）`]=actual===expected;}
 postman.setGlobalVariable("assertEqual",assertEqual);
 
 //使用
-// var logParams=eval('('+globals.logParams+')');//是否有Content-Type
-// var getResponseJson=eval('('+globals.getResponseJson+')');
-// var assertType=eval('('+globals.assertType+')');
-//  var assertEqual=eval('('+globals.assertEqual+')');
-//  var assertNotEqual = eval('('+globals.assertNotEqual+')');
-// //使用
+//当success === false定义打印返回中的message
+var printMessage1=function tester(){
+ var printMessage1=(responseBody.has("message")&&JSON.parse(responseBody).success === false)?true:false;if(printMessage1) tests['HasMessage   '+ JSON.parse(responseBody).message]=true;}
+ postman.setGlobalVariable("printMessage1", printMessage1);
+var printMessage0 = function tester() {
+	var printMessage0 = (responseBody.has("message") && JSON.parse(responseBody).success === false) ? true : false;
+	if (printMessage0) tests['HasMessage   ' + JSON.parse(responseBody).message] = false;
+}
+postman.setGlobalVariable("printMessage0", printMessage0);
+//validate  object validateMultipleArr
+var validateMultipleArr = function tester(API,PreAPI,AcArr,ExObj) {
+try {
+       if (responseCode.code === 200) {
+			//如果长度不为1，返回空报错
+			if(AcArr.length===1){
+			var A = tv4.validateMultiple(AcArr[0], ExObj);
+			           var AisValid = A.valid;
+			           postman.setEnvironmentVariable("AisValid", AisValid);
+			           if (!AisValid) {
+							             for (j = 0; j < A.errors.length; j++) {
+							               tests['Invalid Schema:'+`${API}`+'after'+`${PreAPI}` +'    '+  A.errors[j] + ' at ' + A.errors[j].dataPath +A.errors[j].schemaPath] = AisValid;
+							             }
 
+			             } else {
+			             tests[`${API}`+'return success after'+ `${PreAPI}`] = AisValid;
 
-var assertNotEqual = eval('('+globals.assertNotEqual+')');
-assertNotEqual("name", 'actual', 'expected');//字段name的实际是否等于实际值 
-var logParams=eval('('+globals.logParams+')');//是否有Content-Type
-logParams();
-var getResponseJson=eval('('+globals.getResponseJson+')');
-getResponseJson();
-var assertType=eval('('+globals.assertType+')');
-assertType('name','value','array');
-//boolean number string symbol function  object/array
+			           }
+			}else{tests['get empty data']=AcArr.length===1;}
 
- var assertEqual=eval('('+globals.assertEqual+')');
- assertEqual('name','actual','expecte');
-/／失败重试
-// Counter for number of requests
-var counter = environment.counter ? _.parseInt(environment.counter) + 1 : 1;
-postman.setEnvironmentVariable("counter", counter);
+			       } else {
+			         tests[`${API}`+'  Status code is 200'] = responseCode.code === 200;
+			       }
+     } catch (e) {
+       tests[`${API}`+'exception'+e] = false;
+     }
 
+};
+ postman.setGlobalVariable("validateMultipleArr", validateMultipleArr);
+ 
+var validateMultipleObj = function tester(API,PreAPI,AcObj,ExObj) {
+try {
+       if (responseCode.code === 200) {
+			 
+			 
+			var A = tv4.validateMultiple(AcObj, ExObj);
+			           var AisValid = A.valid;
+			           postman.setEnvironmentVariable("AisValid", AisValid);
+			           if (!AisValid) {
+							             for (j = 0; j < A.errors.length; j++) {
+							               tests['Invalid Schema:'+`${API}`+'after'+`${PreAPI}` +'    '+  A.errors[j] + ' at ' + A.errors[j].dataPath +A.errors[j].schemaPath] = AisValid;
+							             }
 
-function retryOnFailure(successCode, numberOfRetrys) {
+			             } else {
+			             tests[`${API}`+'return success after'+ `${PreAPI}`] = AisValid;
+
+			           }
+			 
+
+			       } else {
+			         tests[`${API}`+'  Status code is 200'] = responseCode.code === 200;
+			       }
+     } catch (e) {
+       tests[`${API}`+'exception'+e] = false;
+     }
+
+};
+ postman.setGlobalVariable("validateMultipleObj", validateMultipleObj);
+  var retry=function retryOnFailure(successCode, numberOfRetrys) {
     var key = request.name + '_counter';
     var execCounter = postman.getEnvironmentVariable(key) || 1;
 
@@ -70,6 +111,46 @@ function retryOnFailure(successCode, numberOfRetrys) {
         execCounter++;
         postman.setEnvironmentVariable(key, execCounter);
         postman.setNextRequest(request.name);
-    }
-}
+    };};
+     var retryOnFailure=function retryOnFailure(successCode, numberOfRetrys) {
+    var key = request.name + '_counter';
+    var execCounter = postman.getEnvironmentVariable(key) || 1;
 
+    var sleepDuration = 1000;
+    var waitUntilTime = new Date().getTime() + sleepDuration;
+    if (responseCode.code !== successCode && execCounter <= numberOfRetrys) {
+        while (new Date().getTime() < waitUntilTime) {
+            // Do Nothing -> Wait
+        }
+        console.log('Retrying: ' + request.name + '\nGot: ' + responseCode.code + ' Expected: ' + successCode + '\nWaited: ' + sleepDuration / 1000 + 'sec  \nRetry Number: ' + execCounter + ' of ' + numberOfRetrys);
+        execCounter++;
+        postman.setEnvironmentVariable(key, execCounter);
+        postman.setNextRequest(request.name);
+    }};
+     
+postman.setGlobalVariable("retryOnFailure", retryOnFailure);
+//     var retryOnFailure=eval('('+globals.retryOnFailure+')');
+// retryOnFailure(400,2);
+// //使用实例
+
+// var printMessage=eval('('+globals.printMessage+')');
+//  printMessage();
+// var assertNotEqual = eval('('+globals.assertNotEqual+')');
+// assertNotEqual("name", 'actual', 'expected');//字段name的实际是否等于实际值
+// var logParams=eval('('+globals.logParams+')');//是否有Content-Type
+// logParams();
+// var getResponseJson=eval('('+globals.getResponseJson+')');
+// getResponseJson();
+// var assertType=eval('('+globals.assertType+')');
+// assertType('name','value','array');
+
+//  var assertEqual=eval('('+globals.assertEqual+')');
+//  assertEqual('name','actual','expecte');
+// var validateMultipleArr=eval('('+globals.validateMultipleArr+')');
+// validateMultipleArr('CMSGetApp','testpre',JSON.parse(responseBody).data,expCMSGetApp);
+ 
+// var validateMultipleObj=eval('('+globals.validateMultipleObj+')');
+// validateMultipleObj('CMSGetApp','testpre',JSON.parse(responseBody).result,expCMSGetApp);
+
+// var validateMultipleObj=eval('('+globals.retry+')');
+// retryOnFailure(200,2);
